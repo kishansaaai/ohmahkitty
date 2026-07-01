@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { SignIn, SignUp } from '@clerk/clerk-react'
+import { SignUp } from '@clerk/clerk-react'
 import { useAuth } from '../hooks/useAuth.jsx'
 import catSleeping from '../assets/cat-sleeping.png'
 
@@ -23,7 +23,7 @@ function PawIcon({ className, style, ...props }) {
   )
 }
 
-export default function Auth() {
+export default function SignUpPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
 
@@ -147,9 +147,9 @@ export default function Auth() {
 
           {/* Clerk Authentication Component */}
           <div className="flex justify-center">
-            <SignIn 
+            <SignUp 
               routing="hash"
-              signUpUrl="#/sign-up"
+              signInUrl="#/auth"
               appearance={{
                 elements: {
                   rootBox: "mx-auto",

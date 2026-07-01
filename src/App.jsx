@@ -1,12 +1,20 @@
 import React, { Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import { ClerkProvider } from '@clerk/clerk-react'
 import { AuthProvider, useAuth } from './hooks/useAuth.jsx'
 import { Navbar } from './components/UI/Navbar'
 import { PawLoader } from './components/UI/PawLoader'
 import { ErrorBoundary } from './components/UI/ErrorBoundary'
 
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error("Missing Clerk Publishable Key")
+}
+
 const Auth = React.lazy(() => import('./pages/Auth'))
+const SignUpPage = React.lazy(() => import('./pages/SignUp'))
 const ColonyDetail = React.lazy(() => import('./pages/ColonyDetail'))
 const Dashboard = React.lazy(() => import('./pages/Dashboard'))
 const Volunteers = React.lazy(() => import('./pages/Volunteers'))
@@ -54,6 +62,13 @@ function AppRoutes() {
         <ErrorBoundary>
           <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><PawLoader /></div>}>
             {user ? <Navigate to="/" replace /> : <Auth />}
+          </Suspense>
+        </ErrorBoundary>
+      } />
+      <Route path="/sign-up" element={
+        <ErrorBoundary>
+          <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><PawLoader /></div>}>
+            {user ? <Navigate to="/" replace /> : <SignUpPage />}
           </Suspense>
         </ErrorBoundary>
       } />
@@ -191,29 +206,31 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <AuthProvider>
-        <AppRoutes />
-        <Toaster
-          position="bottom-center"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              borderRadius: '12px',
-              background: '#fff',
-              color: '#374151',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
-              fontSize: '14px',
-            },
-            success: {
-              iconTheme: { primary: '#16a34a', secondary: '#fff' },
-            },
-            error: {
-              iconTheme: { primary: '#dc2626', secondary: '#fff' },
-            },
-          }}
-        />
-      </AuthProvider>
-    </BrowserRouter>
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <AuthProvider>
+          <AppRoutes />
+          <Toaster
+            position="bottom-center"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                borderRadius: '12px',
+                background: '#fff',
+                color: '#374151',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
+                fontSize: '14px',
+              },
+              success: {
+                iconTheme: { primary: '#16a34a', secondary: '#fff' },
+              },
+              error: {
+                iconTheme: { primary: '#dc2626', secondary: '#fff' },
+              },
+            }}
+          />
+        </AuthProvider>
+      </BrowserRouter>
+    </ClerkProvider>
   )
 }
