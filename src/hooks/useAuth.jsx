@@ -57,6 +57,26 @@ export function AuthProvider({ children }) {
     if (error) throw error
   }
 
+  async function signInWithGoogle() {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/`
+      }
+    })
+    if (error) throw error
+  }
+
+  async function signInWithGitHub() {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: `${window.location.origin}/`
+      }
+    })
+    if (error) throw error
+  }
+
   async function signOut() {
     setUser(null)
     setProfile(null)
@@ -67,7 +87,19 @@ export function AuthProvider({ children }) {
   const isFeeder = profile?.role === 'feeder'
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, isAdmin, isFeeder, signIn, signUp, signOut, refetchProfile: () => fetchProfile(user?.id) }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      profile, 
+      loading, 
+      isAdmin, 
+      isFeeder, 
+      signIn, 
+      signUp, 
+      signInWithGoogle,
+      signInWithGitHub,
+      signOut, 
+      refetchProfile: () => fetchProfile(user?.id) 
+    }}>
       {children}
     </AuthContext.Provider>
   )
